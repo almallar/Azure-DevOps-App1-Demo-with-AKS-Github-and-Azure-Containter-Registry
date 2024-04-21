@@ -1,26 +1,36 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app1-nginx-deployment
-  labels:
-    app: app1-nginx
+  name: my-web-app-deployment
 spec:
-  replicas: 1
+  replicas: 3  # Número de réplicas de tu aplicación
   selector:
     matchLabels:
-      app: app1-nginx
+      app: my-web-app
   template:
     metadata:
       labels:
-        app: app1-nginx
+        app: my-web-app
     spec:
       containers:
-        - name: app1-nginx
-          image: my-registry-name.azurecr.io/myimage:${{ github.sha }}
-          ports:
-            - containerPort: 80
+      - name: my-web-app
+        image: acracks33.azurecr.io/myimage:${{ github.sha }}  # Nombre de tu imagen Docker
+        ports:
+        - containerPort: 80  # Puerto en el que tu aplicación está escuchando dentro del contenedor
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-web-app-svc
+spec:
+  selector:
+    app: my-web-app
+  ports:
+  - protocol: TCP
+    port: 80  # Puerto del Service
+    targetPort: 80  # Puerto del contenedor donde la aplicación está escuchando
 
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -33,8 +43,10 @@ spec:
       - path: /
         backend:
           service:
-            name: app1-nginx
+            name: my-web-app-svc
             port:
               number: 80
         pathType: Exact
+
+
 
