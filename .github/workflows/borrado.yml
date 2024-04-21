@@ -14,3 +14,4 @@ jobs:
     - name: Delete Kubernetes Resources
       run: |
         kubectl delete -f kube-manifests/01-Deployment-and-LoadBalancer-Service.yml
+#d
