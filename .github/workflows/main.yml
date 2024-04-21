@@ -52,8 +52,7 @@ jobs:
     - uses: azure/k8s-deploy@v1
       with:
         manifests: |
-          kube-manifests/deployment.yml
-          kube-manifests/service.yml
+          kube-manifests/01-Deployment-and-LoadBalancer-Service.yml
         images: |
           ${{ env.REGISTRY_NAME }}.azurecr.io/myimage:${{ github.sha }}
         imagepullsecrets: |
