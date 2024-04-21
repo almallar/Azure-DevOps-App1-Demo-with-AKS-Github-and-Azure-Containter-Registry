@@ -6,7 +6,34 @@ on:
       - delete-resources
   workflow_dispatch:  # Esto permite desencadenar el flujo de trabajo manualmente desde GitHub
 
+env:
+  REGISTRY_NAME: my-registry-name
+  CLUSTER_NAME: my-cluster-name
+  CLUSTER_RESOURCE_GROUP: my-cluster-resource-group
+  NAMESPACE: default
+
+
+
 jobs:
+  build:
+      runs-on: ubuntu-latest
+      environment: dev
+      steps:
+      - uses: actions/checkout@master
+      
+      # Connect to Azure Container registry (ACR)
+      - uses: azure/docker-login@v1
+        with:
+          login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
+          username: ${{ secrets.REGISTRY_USERNAME }} 
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+     # Set the target Azure Kubernetes Service (AKS) cluster. 
+      - uses: azure/aks-set-context@v1
+        with:
+          creds: '${{ secrets.AZURE_CREDENTIALS }}'
+          cluster-name: ${{ env.CLUSTER_NAME }}
+          resource-group: ${{ env.CLUSTER_RESOURCE_GROUP }}
+          
   delete-resources:
     runs-on: ubuntu-latest
     steps:
