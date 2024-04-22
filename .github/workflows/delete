@@ -1,0 +1,21 @@
+name: Delete Image and Deployment
+
+on:
+  push:
+    branches:
+      - main # Ajusta la rama según la tuya
+
+jobs:
+  delete:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Delete Image
+      run: |
+        # Elimina la imagen del registro de contenedor
+        az acr repository delete --name acracks33 --image myimage:${{ github.sha }} --yes
+    - name: Delete Deployment
+      run: |
+        # Elimina el deployment utilizando los archivos de manifiesto
+        kubectl delete -f kube-manifests/01-Deployment-and-LoadBalancer-Service.yml
+      env:
+        AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
