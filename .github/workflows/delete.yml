@@ -9,9 +9,12 @@ jobs:
     steps:
     - name: Delete Image
       run: |
-       
-        # Eliminar la imagen del registro de contenedores
-        az acr repository delete --name acracks33 --image myimage:${{ github.sha }} --yes
+    - uses: azure/docker-login@v1
+      with:
+        login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }} 
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+         az acr repository delete --name acracks33 --image myimage:${{ github.sha }} --yes
       env:
         AZURE_SERVICE_PRINCIPAL_APP_ID: ${{ secrets.AZURE_SP_APP_ID }}
         AZURE_SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.AZURE_SP_PASSWORD }}
