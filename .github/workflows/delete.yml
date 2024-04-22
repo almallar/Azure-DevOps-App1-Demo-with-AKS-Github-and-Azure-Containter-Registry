@@ -9,6 +9,11 @@ env:
   NAMESPACE: default
 
 jobs:
+  build:
+      runs-on: ubuntu-latest
+      environment: dev
+      steps:
+      - uses: actions/checkout@master
   delete:
     runs-on: ubuntu-latest
     steps:
