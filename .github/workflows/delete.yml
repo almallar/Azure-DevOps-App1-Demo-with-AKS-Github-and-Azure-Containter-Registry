@@ -9,8 +9,7 @@ jobs:
     steps:
     - name: Delete Image
       run: |
-        az login --service-principal -u ${{ secrets.AZURE_SP_APP_ID }} -p ${{ secrets.AZURE_SP_PASSWORD }} --tenant ${{ secrets.AZURE_TENANT_ID }}
-        az aks get-credentials --resource-group agic-pub-priv-rg --name aks-pub-priv --overwrite-existing
+       
         # Eliminar la imagen del registro de contenedores
         az acr repository delete --name acracks33 --image myimage:${{ github.sha }} --yes
       env:
@@ -20,6 +19,8 @@ jobs:
     - name: Delete Deployment
       run: |
         # Eliminar el despliegue de Kubernetes
+        az login --service-principal -u ${{ secrets.AZURE_SP_APP_ID }} -p ${{ secrets.AZURE_SP_PASSWORD }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+        az aks get-credentials --resource-group agic-pub-priv-rg --name aks-pub-priv --overwrite-existing
    
         kubectl delete -f kube-manifests/01-Deployment-and-LoadBalancer-Service.yml
       env:
