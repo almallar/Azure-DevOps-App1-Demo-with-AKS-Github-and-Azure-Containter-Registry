@@ -5,7 +5,7 @@ on:
 
 # Environment variables available to all jobs and steps in this workflow
 env:
-  REGISTRY_NAME: acracks33
+  REGISTRY_NAME: acracks33.azurecr.io
   CLUSTER_NAME: aks-pub-priv
   CLUSTER_RESOURCE_GROUP: agic-pub-priv-rg
   NAMESPACE: default
