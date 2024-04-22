@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-web-app-deployment
+spec:
+  replicas: 3  # Número de réplicas de tu aplicación
+  selector:
+    matchLabels:
+      app: my-web-app
+  template:
+    metadata:
+      labels:
+        app: my-web-app
+    spec:
+      containers:
+      - name: my-web-app
+        image: acracks33.azurecr.io/myimage:e1789975d49b79d8ed5c04ba91516da254aedd32
+        ports:
+        - containerPort: 80  # Puerto en el que tu aplicación está escuchando dentro del contenedor
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-web-app-svc
+spec:
+  selector:
+    app: my-web-app
+  ports:
+  - protocol: TCP
+    port: 80  # Puerto del Service
+    targetPort: 80  # Puerto del contenedor donde la aplicación está escuchando
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+spec:
+  ingressClassName: azure-application-gateway
+  rules:
+  - http:
+      paths:
+      - path: /
+        backend:
+          service:
+            name: my-web-app-svc
+            port:
+              number: 80
+        pathType: Exact
