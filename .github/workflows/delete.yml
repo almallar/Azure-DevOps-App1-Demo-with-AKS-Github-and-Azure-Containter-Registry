@@ -1,30 +1,47 @@
-name: Delete
+name: Main
 
 on:
   workflow_dispatch:
 
+# Environment variables available to all jobs and steps in this workflow
+env:
+  REGISTRY_NAME: acracks33
+  CLUSTER_NAME: aks-pub-priv
+  CLUSTER_RESOURCE_GROUP: agic-pub-priv-rg
+  NAMESPACE: default
+  
 jobs:
-  delete:
+  delete_image_and_deployment:
     runs-on: ubuntu-latest
+    environment: dev
     steps:
-    - name: Delete Image
-      run: |
+    - uses: actions/checkout@master
+    
+    # Connect to Azure Container registry (ACR)
     - uses: azure/docker-login@v1
       with:
         login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
         username: ${{ secrets.REGISTRY_USERNAME }} 
         password: ${{ secrets.REGISTRY_PASSWORD }}
-         az acr repository delete --name acracks33 --image myimage:${{ github.sha }} --yes
-      env:
-        AZURE_SERVICE_PRINCIPAL_APP_ID: ${{ secrets.AZURE_SP_APP_ID }}
-        AZURE_SERVICE_PRINCIPAL_PASSWORD: ${{ secrets.AZURE_SP_PASSWORD }}
-        AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-    - name: Delete Deployment
-      run: |
-        # Eliminar el despliegue de Kubernetes
+    
+    # Delete image from Azure Container registry (ACR)
+    - run: |
+        az acr repository delete --name ${{ env.REGISTRY_NAME }} --image myimage:${{ github.sha }} --yes
+    
+    # Set the target Azure Kubernetes Service (AKS) cluster. 
+    - uses: azure/aks-set-context@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+        cluster-name: ${{ env.CLUSTER_NAME }}
+        resource-group: ${{ env.CLUSTER_RESOURCE_GROUP }}
+    
+    # Delete Kubernetes deployment
+    - run: |
         az login --service-principal -u ${{ secrets.AZURE_SP_APP_ID }} -p ${{ secrets.AZURE_SP_PASSWORD }} --tenant ${{ secrets.AZURE_TENANT_ID }}
-        az aks get-credentials --resource-group agic-pub-priv-rg --name aks-pub-priv --overwrite-existing
-   
+        az aks get-credentials --resource-group ${{ env.CLUSTER_RESOURCE_GROUP }} --name ${{ env.CLUSTER_NAME }} --overwrite-existing
         kubectl delete -f kube-manifests/01-Deployment-and-LoadBalancer-Service.yml
       env:
         AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+        AZURE_SP_APP_ID: ${{ secrets.AZURE_SP_APP_ID }}
+        AZURE_SP_PASSWORD: ${{ secrets.AZURE_SP_PASSWORD }}
+        AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
