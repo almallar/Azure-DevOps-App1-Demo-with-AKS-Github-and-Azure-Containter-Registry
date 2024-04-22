@@ -13,6 +13,13 @@ jobs:
   delete:
     runs-on: ubuntu-latest
     steps:
+    
+    - uses: azure/docker-login@v1
+      with:
+        login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }} 
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+        
     - name: Delete Image
       run: |
         # Elimina la imagen del registro de contenedor
