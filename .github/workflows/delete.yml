@@ -1,4 +1,4 @@
-name: Main
+name: Delete
 
 on:
   workflow_dispatch:
