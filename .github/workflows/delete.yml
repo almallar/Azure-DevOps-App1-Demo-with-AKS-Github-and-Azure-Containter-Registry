@@ -1,4 +1,4 @@
-name: Delete
+name: Main
 
 on:
   workflow_dispatch:
@@ -15,14 +15,12 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     steps:
-    - uses: actions/checkout@master
-    
-    # Connect to Azure Container registry (ACR)
-    - uses: azure/docker-login@v1
+    - name: Azure Login
+      uses: azure/login@v1
       with:
-        login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
-        username: ${{ secrets.REGISTRY_USERNAME }} 
-        password: ${{ secrets.REGISTRY_PASSWORD }}
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - uses: actions/checkout@master
     
     # Delete image from Azure Container registry (ACR)
     - run: |
