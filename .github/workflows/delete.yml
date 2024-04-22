@@ -4,11 +4,6 @@ on:
   workflow_dispatch:
 
 # Environment variables available to all jobs and steps in this workflow
-env:
-  REGISTRY_NAME: acracks33.azurecr.io
-  CLUSTER_NAME: aks-pub-priv
-  CLUSTER_RESOURCE_GROUP: agic-pub-priv-rg
-  NAMESPACE: default
   
 jobs:
   delete_image_and_deployment:
@@ -21,13 +16,7 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
     
     - uses: actions/checkout@master
-       
-    
-    # Delete image from Azure Container registry (ACR)
-    - run: |
-        az login --service-principal -u ${{ secrets.AZURE_SP_APP_ID }} -p ${{ secrets.AZURE_SP_PASSWORD }} --tenant ${{ secrets.AZURE_TENANT_ID }}
-        az acr repository delete --name ${{ env.REGISTRY_NAME }} --image myimage:${{ github.sha }} --yes
-    
+           
     # Set the target Azure Kubernetes Service (AKS) cluster. 
     - uses: azure/aks-set-context@v1
       with:
