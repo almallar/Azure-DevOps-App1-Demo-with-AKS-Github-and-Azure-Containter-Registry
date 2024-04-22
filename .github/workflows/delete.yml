@@ -21,10 +21,11 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
     
     - uses: actions/checkout@master
-       az login --service-principal -u ${{ secrets.AZURE_SP_APP_ID }} -p ${{ secrets.AZURE_SP_PASSWORD }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+       
     
     # Delete image from Azure Container registry (ACR)
     - run: |
+        az login --service-principal -u ${{ secrets.AZURE_SP_APP_ID }} -p ${{ secrets.AZURE_SP_PASSWORD }} --tenant ${{ secrets.AZURE_TENANT_ID }}
         az acr repository delete --name ${{ env.REGISTRY_NAME }} --image myimage:${{ github.sha }} --yes
     
     # Set the target Azure Kubernetes Service (AKS) cluster. 
