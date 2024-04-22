@@ -3,6 +3,12 @@ name: Delete
 on:
   workflow_dispatch: # Esto hace que el action se lance de forma manual
 
+env:
+  REGISTRY_NAME: acracks33
+  CLUSTER_NAME: aks-pub-priv
+  CLUSTER_RESOURCE_GROUP: agic-pub-priv-rg
+  NAMESPACE: default
+
 jobs:
   delete:
     runs-on: ubuntu-latest
